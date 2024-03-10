@@ -1,0 +1,39 @@
+{question.questionType === "" ? (
+<div className="">
+  <form className="flex flex-col gap-3 justify-center items-center">
+    {question.answers.map((answer) => { return (
+    <label
+      className="w-full p-3 border border-border bg-lightBlue hover:bg-blue transition-all cursor-pointer rounded-md"
+      htmlFor="{answer.id}"
+    >
+      <input
+        className="ml-6"
+        type="radio"
+        name="{answer.answerCode}"
+        id="{answer.id}"
+      />
+      السؤال الاول
+    </label>
+    ); })}
+  </form>
+</div>
+) : ( question.question.questionType === "true_false" && (
+<div>
+  <form>
+    <label
+      className="block w-full p-3 border border-border bg-lightBlue hover:bg-blue transition-all cursor-pointer rounded-md"
+      htmlFor="quesion3"
+    >
+      <input className="ml-6" type="radio" name="quesion" id="quesion3" />
+      ww w
+    </label>
+    <label
+      className="block w-full p-3 border border-border bg-lightBlue hover:bg-blue transition-all cursor-pointer rounded-md mt-5"
+      htmlFor="quesion4"
+    >
+      <input className="ml-6" type="radio" name="quesion" id="quesion4" />
+      www
+    </label>
+  </form>
+</div>
+) )}

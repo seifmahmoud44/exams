@@ -20,9 +20,7 @@ function App() {
             </div>
           </div>
         </div>
-        <h1 className="text-text font-medium text-xl mb-10 mr-20">
-          راس السؤال
-        </h1>
+
         <Qusetions />
       </div>
     </div>
