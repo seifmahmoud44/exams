@@ -1,3 +1,4 @@
+import OtherTry from "./components/OtherTry";
 import Qusetions from "./components/Qusetions";
 
 function App() {
@@ -22,6 +23,9 @@ function App() {
         </div>
 
         <Qusetions />
+        {/* <div className="w-full">
+          <OtherTry />
+        </div> */}
       </div>
     </div>
   );
