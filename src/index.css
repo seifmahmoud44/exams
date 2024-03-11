@@ -16,3 +16,7 @@ html {
   font-family: noto;
   src: url(../public/Noto_Sans_Arabic/static/NotoSansArabic-Bold.ttf);
 }
+.counter span {
+  margin-top: 3px;
+  display: block;
+}

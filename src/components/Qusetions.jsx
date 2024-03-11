@@ -1,25 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getExam } from "../store/examSlice";
 import leftImg from "../img/left-arrow.png";
 import rightImg from "../img/next.png";
 import final from "../img/final.png";
-const Qusetions = () => {
+const Qusetions = ({ setcount, count }) => {
   const dispatch = useDispatch();
-  const [count, setcount] = useState(0);
 
   const exams = useSelector((state) => state.examSlice.exam);
-  const questionsLength = exams.length;
+
   useEffect(() => {
     dispatch(getExam("IHCAWX5IS4FGG718SMCN"));
-
-    // if (count > exams.length) {
-    //   console.log("yes");
-    //   setcount(exams.length);
-    // }
-    // if (count < 0) {
-    //   setcount(0);
-    // }
   }, [dispatch]);
 
   const [openImg, setOpenImg] = useState(false);

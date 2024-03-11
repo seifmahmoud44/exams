@@ -1,7 +1,20 @@
-import OtherTry from "./components/OtherTry";
+import { useEffect, useState } from "react";
+
 import Qusetions from "./components/Qusetions";
+import { useDispatch, useSelector } from "react-redux";
+import Timer from "./components/Timer";
+import { getExamInfo } from "./store/examSlice";
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getExamInfo("IHCAWX5IS4FGG718SMCN"));
+  }, [dispatch]);
+  const examInfo = useSelector((state) => state.examSlice.examInfo);
+
+  const [count, setCount] = useState(0);
+  const exams = useSelector((state) => state.examSlice.exam);
+
   return (
     <div className="py-5 px-4">
       <h1 className="text-text text-2xl font-medium text-center">
@@ -10,19 +23,14 @@ function App() {
       <div className="max-md:py-10 md:w-[80%] m-auto py-20 w-full">
         <div className="flex   flex-col md:flex-row justify-between items-center mb-20 object-left">
           <div className="ml-auto py-3 px-5 rounded-full border border-border bg-blue w-fit mb-5">
-            <h1 className="text-text text-xl font-medium">{`السؤال ؤقم من رقم`}</h1>
+            <h1 className="text-text text-xl font-medium">{`السؤال ${
+              count + 1
+            } من ${exams && exams.length}`}</h1>
           </div>
-          <div className="flex mr-auto">
-            <div className=" max-md:-translate-x-14 py-3 pl-16 px-5 rounded-full border border-border bg-blue">
-              <h1 className="text-text text-xl font-medium">الوقت الباقي</h1>
-            </div>
-            <div className="z-10 md:translate-x-14 py-3 px-5 rounded-full border border-border  bg-darkBlue">
-              <h1 className="text-white text-xl font-medium">10:25</h1>
-            </div>
-          </div>
+          {examInfo && <Timer />}
         </div>
 
-        <Qusetions />
+        <Qusetions setcount={setCount} count={count} />
         {/* <div className="w-full">
           <OtherTry />
         </div> */}
