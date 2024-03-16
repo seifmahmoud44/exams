@@ -82,3 +82,6 @@ question.questionType === "true_false" && question.id === count ? (
     </label>
   </form>
 </div>
+
+dispatch(sendMCQAnswer({ answer: `${answer}`, is_correct: true, answerCode:
+`${exams[i].answers[]}`, imgWithAnswer: "string" }));
