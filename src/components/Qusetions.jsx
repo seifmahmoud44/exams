@@ -1,76 +1,88 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-// import { getExam, sendMCQAnswer } from "../store/datalice";
-import leftImg from "../img/left-arrow.png";
-import rightImg from "../img/next.png";
-import final from "../img/final.png";
-import axios from "axios";
-const Qusetions = () => {
-  const dispatch = useDispatch();
-  const [data, setData] = useState([]);
-  const [count, setcount] = useState(0);
+import React, { useState } from "react";
 
-  useEffect(() => {
-    // dispatch(getExam("IHCAWX5IS4FGG718SMCN"));
-    const fetch = async () => {
-      try {
-        const res = await axios.get(
-          `https://exam.e3lanotopia.software/api/v1/get_exam_questions/IHCAWX5IS4FGG718SMCN`
-        );
-        return setData(res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetch();
-  }, []);
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router";
+import { sendExam } from "../store/examSlice";
+import UploadImg from "./UploadImg";
+
+const Qusetions = ({ exams, count, examInfo }) => {
+  const dispatch = useDispatch();
 
   const [openImg, setOpenImg] = useState(false);
+  const param = useParams();
+  const [upLoad, setUpload] = useState();
 
-  // const mcqQuestions = useRef(null);
-  // const submitHandler = (e) => {
-  //   setValue(e.target.value);
-  // };
-  useCallback(() => {}, []);
-  const [send, setSend] = useState(false);
   const formHandler = (e) => {
     e.preventDefault();
+    console.log(upLoad);
     const formData = new FormData(e.target);
-
-    for (let i = 0; i < data.length; i++) {
+    let allQuestions = [];
+    let finalData = {};
+    console.log(formData.get("img"));
+    for (let i = 0; i < exams.length; i++) {
       const mcqAnswerin =
-        data[i].questionType === "mcq" && formData.get(`${data[i].id}`);
+        exams[i].questionType === "mcq" && formData.get(`${exams[i].id}`);
+      const trueFalseAnswerIn =
+        exams[i].questionType === "true_false" &&
+        formData.get(`${exams[i].id}`);
+      const textAnswerIn =
+        exams[i].questionType === "text" && formData.get(`${exams[i].id}`);
+
+      const AnswerCode = exams[i].answerCode;
       const mcqAnswer = {
         answer: mcqAnswerin,
-        is_correct: true,
-        answerCode: `${
-          data[i].questionType === "mcq" &&
-          data[i].answers.find((x) => x.answer === mcqAnswerin)
-        }`,
-        imgWithAnswer: "string",
+        questionType: "mcq",
+        answerCode: AnswerCode,
       };
-      // console.log(
-      //   data[i].questionType === "mcq" &&
-      //     data[i].answers.find((x) => x.answer === mcqAnswerin)
-      // );
+      const trueFalseNswer = {
+        answer: trueFalseAnswerIn,
+        questionType: "true_false",
+        answerCode: AnswerCode,
+      };
+      const textNswer = {
+        answer: textAnswerIn,
+        questionType: "text",
+        answerCode: AnswerCode,
+      };
+
+      if (exams[i].questionType === "mcq") {
+        allQuestions.push(mcqAnswer);
+      } else if (exams[i].questionType === "true_false") {
+        allQuestions.push(trueFalseNswer);
+      } else if (exams[i].questionType === "text") {
+        allQuestions.push(textNswer);
+      }
+      finalData = {
+        email: param.email,
+        examCode: examInfo.examCode,
+        questions: allQuestions,
+        platform: examInfo.platform,
+        userPhone: param.userPhone,
+        userParentPhone: param.userParentPhone,
+      };
     }
+
+    dispatch(sendExam(finalData)).then(() => {
+      console.log("sent");
+    });
   };
 
   return (
     <form
+      id="form"
       onSubmit={formHandler}
-      className=" md:w-[700px] m-auto   gap-44 relative h-[600px] overflow-x-hidden"
+      className=" md:w-[700px] m-auto  gap-44 relative h-[600px] overflow-x-hidden"
     >
-      <div className="flex">
-        {data &&
-          data.map((question, index) => (
+      <div className="flex h-full">
+        {exams &&
+          exams.map((question, index) => (
             <div
               key={index}
-              className={`w-full absolute top-0 transition-all ${
+              className={`w-full absolute top-0 transition-all h-auto ${
                 count === index ? "left-0" : "left-full"
               } `}
             >
-              <div className="flex flex-col gap-3 justify-center items-center my-10   ">
+              <div className="flex flex-col gap-3 justify-center items-center my-10  h-full ">
                 <h1 className="text-text font-medium text-xl">
                   {question.question}
                 </h1>
@@ -101,11 +113,12 @@ const Qusetions = () => {
                   <div className=" flex flex-col w-full gap-3">
                     {question.answers.map((answer, itemIndex) => (
                       <label
-                        className="w-full p-3 border border-border bg-lightBlue hover:bg-blue transition-all cursor-pointer rounded-md"
+                        className={` w-full p-3 border border-border  bg-lightBlue hover:bg-blue transition-all cursor-pointer rounded-md`}
                         htmlFor={answer.id}
                         key={itemIndex}
                       >
                         <input
+                          required
                           className="ml-6"
                           type="radio"
                           name={question.id}
@@ -118,11 +131,12 @@ const Qusetions = () => {
                   </div>
                 ) : question.questionType === "true_false" ? (
                   <div className=" flex flex-col gap-3 justify-center items-center my-10 w-full  ">
-                    <label
+                    {/* <label
                       className=" w-full p-3 border border-border bg-lightBlue hover:bg-blue transition-all cursor-pointer rounded-md my-3 "
                       htmlFor="quesion3"
                     >
                       <input
+                        required
                         className="ml-6"
                         type="radio"
                         name={question.id}
@@ -136,6 +150,7 @@ const Qusetions = () => {
                       htmlFor="quesion4"
                     >
                       <input
+                        required
                         className="ml-6"
                         type="radio"
                         name={question.id}
@@ -143,11 +158,13 @@ const Qusetions = () => {
                         value={"false"}
                       />
                       العبارة خاطئة
-                    </label>
+                    </label> */}
+                    <UploadImg setUpload={setUpload} />
                   </div>
                 ) : question.questionType === "text" ? (
-                  <div className="w-full px-9">
+                  <div className="w-full px-9 max-md:p-0">
                     <textarea
+                      required
                       className="w-full outline-none border border-gray rounded-md px-5 py-3"
                       name={question.id}
                       id=""
@@ -160,43 +177,13 @@ const Qusetions = () => {
               </div>
             </div>
           ))}
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-0 flex justify-center items-center gap-5">
-          <button
-            disabled={count < 1}
-            className={`${
-              count < 1 ? "bg-gray" : "bg-darkBlue"
-            }  py-2 px-4 rounded-full text-white flex justify-center items-center gap-3`}
-            onClick={() => setcount(count - 1)}
-          >
-            <img src={rightImg} alt="" />
-            السابق
-          </button>
-          {count === data.length - 1 ? (
-            <button
-              type="submit"
-              className="bg-red py-2 px-4 rounded-full text-white flex justify-center items-center gap-3"
-            >
-              تسليم الامتحان
-              <img src={final} alt="" className="" />
-            </button>
-          ) : (
-            <button
-              disabled={count === data.length - 1}
-              onClick={() => setcount(count + 1)}
-              className="bg-darkBlue py-2 px-4 rounded-full text-white flex justify-center items-center gap-3"
-            >
-              التالي
-              <img src={leftImg} alt="" className="" />
-            </button>
-          )}
-        </div>
       </div>
-      <button
-        className="absolute top-0 right-0 z-50 hover:scale-125"
-        type="submit"
-      >
-        Submit
-      </button>
+      {/* <button
+            className="absolute top-0 right-0 z-50 hover:scale-125"
+            type="submit"
+          >
+            Submit
+          </button> */}
     </form>
   );
 };
